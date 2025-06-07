@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - PGHOST=db
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=todo
+      - PGPORT=5432
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
