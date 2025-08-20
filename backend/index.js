@@ -73,7 +73,27 @@ app.delete('/todos/:id', async (req, res) => {
   }
 });
 
+// Ensure database schema exists before starting server
+async function ensureSchema() {
+	await pool.query(`
+		CREATE TABLE IF NOT EXISTS todos (
+			id SERIAL PRIMARY KEY,
+			title TEXT NOT NULL,
+			completed BOOLEAN NOT NULL DEFAULT FALSE
+		)
+	`);
+}
 
-app.listen(PORT, () => {
-  console.log(`Backend listening on port ${PORT}`);
-});
+const start = async () => {
+	try {
+		await ensureSchema();
+		app.listen(PORT, () => {
+			console.log(`Backend listening on port ${PORT}`);
+		});
+	} catch (err) {
+		console.error('Failed to initialize database schema', err);
+		process.exit(1);
+	}
+};
+
+start();

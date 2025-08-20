@@ -6,8 +6,8 @@ function App() {
 
   useEffect(() => {
     fetch('http://localhost:3001/todos')
-      .then(res => res.json())
-      .then(setTodos)
+      .then(res => res.ok ? res.json() : [])
+      .then(data => Array.isArray(data) ? setTodos(data) : setTodos([]))
       .catch(() => setTodos([]));
   }, []);
 
